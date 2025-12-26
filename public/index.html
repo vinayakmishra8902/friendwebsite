@@ -1,12 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Friends Website</title>
-</head>
-<body>
-  <h1>Hello 👋</h1>
-  <p>Welcome to my website!</p>
+  <title>Friends Chat</title>
 
-  <a href="chat.html">Open Chat</a>
+  <style>
+    body { font-family: Arial; background:#f3f4f6; }
+    .box { max-width:500px; margin:40px auto; padding:20px; background:white; border-radius:14px; }
+    input, textarea { width:100%; padding:10px; margin:6px 0; }
+    button { width:100%; padding:10px; margin-top:6px; cursor:pointer; }
+    #chat { border:1px solid #ddd; padding:10px; border-radius:10px; min-height:150px; }
+    .me { color:#2563eb }
+    .friend { color:#6b7280 }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <h2>Login</h2>
+
+    <input id="name" placeholder="Your name">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+
+    <div id="message"></div>
+
+    <div id="chatArea" style="display:none;">
+      <h3>Messages 💬</h3>
+
+      <div id="chat"></div>
+
+      <textarea id="msg" placeholder="Write something..."></textarea>
+      <button onclick="send()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const users = {
+      "rahul": "1234",
+      "riya": "abcd",
+      "aman": "0011"
+    };
+
+    let currentUser = null;
+    let messages = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+
+    function renderChat() {
+      const chat = document.getElementById("chat");
+      chat.innerHTML = "";
+
+      messages.forEach(m => {
+        chat.innerHTML += `<p class="${m.from === 'admin' ? 'me' : 'friend'}"><b>${m.from}:</b> ${m.text}</p>`;
+      });
+    }
+
+    function login() {
+      const name = document.getElementById("name").value.toLowerCase();
+      const pass = document.getElementById("password").value;
+      const message = document.getElementById("message");
+
+      if (!users[name] || users[name] !== pass) {
+        message.textContent = "Wrong credentials!";
+        return;
+      }
+
+      currentUser = name;
+      message.textContent = "Logged in!";
+      document.getElementById("chatArea").style.display = "block";
+
+      renderChat();
+    }
+
+    function send() {
+      const box = document.getElementById("msg");
+      const text = box.value.trim();
+      if (!text) return;
+
+      messages.push({
+        from: currentUser,
+        text
+      });
+
+      localStorage.setItem("chatMessages", JSON.stringify(messages));
+
+      box.value = "";
+      renderChat();
+    }
+  </script>
 </body>
 </html>
